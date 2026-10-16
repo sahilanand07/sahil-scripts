@@ -1,0 +1,22 @@
+{
+  "tenant": { "name": "Globex", "description": "Dedicated-cloud test", "currency": "USD" },
+  "cloud": { "name": "VME-Cluster-02", "mode": "dedicated" },
+  "admin": { "username": "globex_admin", "email": "admin@globex.example" },
+  "groups": ["Globex-Prod"],
+  "roles": [
+    { "name": "Globex Requester", "copyFrom": "Tenant User", "groups": ["Globex-Prod"], "defaultPersona": "serviceCatalog",
+      "features": { "service-catalog": "full" }, "catalogItems": ["Rocky VM"] }
+  ],
+  "users": [ { "username": "globex_dev", "email": "dev@globex.example", "role": "Globex Requester", "mustChangePassword": true } ],
+  "tags": [ { "name": "Owner", "values": ["team-a", "team-b"] } ],
+  "catalog": {
+    "inputPrefix": "Globex",
+    "vm": { "name": "Rocky VM", "group": "Globex-Prod", "layout": "Rocky 9", "image": "ubuntu-22.04-cloudimg",
+            "network": "net-b", "resourcePool": "cluster-b", "datastore": "auto", "plans": ["Large (8 vCPU, 16 GB)"] }
+  },
+  "policies": {
+    "naming": { "pattern": "gx-${sequence}", "enforcement": "fixed", "autoResolveConflicts": false },
+    "tagEnforcement": { "strict": false, "scope": { "group": "Globex-Prod" } },
+    "quotas": [ { "name": "Globex user quota", "scope": { "user": "globex_dev" }, "maxVms": 3 } ]
+  }
+}

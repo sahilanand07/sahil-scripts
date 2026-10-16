@@ -1,0 +1,11 @@
+# Credentials - never commit
+.env
+*.env
+!.env.example
+
+# Run output: names the customer's infrastructure
+state/
+inventory/
+
+*.log
+*.tmp

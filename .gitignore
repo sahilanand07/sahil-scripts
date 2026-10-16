@@ -1,0 +1,17 @@
+# Credentials - never commit
+.env
+*.env
+!.env.example
+*.pem
+*.key
+
+# Run output (names customer infrastructure)
+state/
+inventory/
+
+# Logs, scratch and OS files
+*.log
+*.tmp
+__pycache__/
+.DS_Store
+Thumbs.db

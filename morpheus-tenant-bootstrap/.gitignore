@@ -1,0 +1,8 @@
+# Local credentials - never commit
+.env
+*.env
+!.env.example
+
+# Logs and scratch output
+*.log
+*.tmp

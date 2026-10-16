@@ -1,0 +1,9 @@
+# Shell scripts must keep LF line endings or bash fails on Linux ("$'\r': command not found")
+*.sh    text eol=lf
+*.py    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# PowerShell reads either line ending; let Git use the platform default
+*.ps1   text
+*.psm1  text

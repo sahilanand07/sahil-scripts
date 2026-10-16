@@ -1,0 +1,105 @@
+{
+  "tenant": {
+    "name": "Acme",
+    "subdomain": "acme",
+    "description": "Acme Corp PoC",
+    "currency": "INR",
+    "role": { "name": "Acme Tenant Role", "copyFrom": "Tenant Admin" }
+  },
+
+  "cloud": {
+    "name": "VME-Cluster-01",
+    "mode": "shared",
+    "share": {
+      "resourcePools": ["prod-cluster"],
+      "datastores": ["gfs2-ds01"],
+      "networks": ["VLAN-110"]
+    }
+  },
+
+  "admin": {
+    "username": "acme_admin",
+    "email": "admin@acme.example",
+    "firstName": "Acme",
+    "lastName": "Admin",
+    "role": "Tenant Admin",
+    "roleCopyFrom": "Tenant Admin"
+  },
+
+  "groups": ["Acme-Dev", "Acme-Prod"],
+
+  "roles": [
+    {
+      "name": "Acme Approver",
+      "copyFrom": "Tenant Admin",
+      "groups": "all",
+      "defaultPersona": "standard",
+      "features": { "operations-approvals": "full" },
+      "catalogItems": "all"
+    },
+    {
+      "name": "Acme Requester",
+      "groups": ["Acme-Dev"],
+      "defaultPersona": "serviceCatalog",
+      "features": {
+        "service-catalog": "full",
+        "service-catalog-dashboard": "full",
+        "service-catalog-inventory": "full",
+        "operations-approvals": "none"
+      },
+      "catalogItems": ["Linux VM", "3-Tier App"]
+    }
+  ],
+
+  "users": [
+    { "username": "acme_approver", "email": "approver@acme.example", "firstName": "Acme", "lastName": "Approver", "role": "Acme Approver" },
+    { "username": "acme_dev1", "email": "dev1@acme.example", "firstName": "Acme", "lastName": "Developer", "role": "Acme Requester" }
+  ],
+
+  "tags": [
+    { "name": "Application", "values": ["ERP", "CRM", "Web-Portal"] },
+    { "name": "CostCenter", "label": "Cost Center", "values": ["CC-1001", "CC-2002", "CC-3003"] }
+  ],
+
+  "catalog": {
+    "inputPrefix": "Acme",
+    "vm": {
+      "name": "Linux VM",
+      "description": "Self-service Linux VM with mandatory Application and Cost Center tags",
+      "group": "Acme-Dev",
+      "layout": "Ubuntu 22.04",
+      "image": "ubuntu-22.04-cloudimg",
+      "network": "VLAN-110",
+      "resourcePool": "prod-cluster",
+      "datastore": "gfs2-ds01",
+      "plans": ["Small (2 vCPU, 4 GB)", "Medium (4 vCPU, 8 GB)"],
+      "defaultDiskGB": 40,
+      "staticTags": { "Environment": "PoC", "ManagedBy": "Self-Service" }
+    },
+    "threeTier": {
+      "name": "3-Tier App",
+      "description": "Web, App and DB tiers provisioned together",
+      "group": "Acme-Dev",
+      "network": "VLAN-110",
+      "resourcePool": "prod-cluster",
+      "datastore": "gfs2-ds01",
+      "tiers": [
+        { "name": "Web", "linkTo": ["App"], "layout": "Ubuntu 22.04", "image": "ubuntu-22.04-cloudimg", "plan": "Small (2 vCPU, 4 GB)", "diskGB": 40 },
+        { "name": "App", "linkTo": ["DB"],  "layout": "Ubuntu 22.04", "image": "ubuntu-22.04-cloudimg", "plan": "Medium (4 vCPU, 8 GB)", "diskGB": 60 },
+        { "name": "DB",  "linkTo": [],      "layout": "Ubuntu 22.04", "image": "ubuntu-22.04-cloudimg", "plan": "Medium (4 vCPU, 8 GB)", "diskGB": 100 }
+      ],
+      "staticTags": { "Environment": "PoC", "ManagedBy": "Self-Service" }
+    }
+  },
+
+  "policies": {
+    "naming": { "pattern": "acme-${sequence}", "enforcement": "user", "autoResolveConflicts": true, "scope": "global" },
+    "approval": { "scope": { "role": "Acme Requester" }, "eachUser": true },
+    "tagEnforcement": { "strict": true, "scope": "global" },
+    "quotas": [
+      { "name": "Requester quota", "scope": { "role": "Acme Requester" }, "eachUser": true,
+        "maxVms": 5, "maxCores": 16, "maxMemoryGB": 64, "maxStorageGB": 500 },
+      { "name": "Dev group quota", "scope": { "group": "Acme-Dev" }, "maxVms": 20 }
+    ]
+  }
+}
